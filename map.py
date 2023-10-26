@@ -4,6 +4,32 @@ from streamlit_folium import folium_static
 import pandas as pd
 import branca
 
+background_image = "https://drive.google.com/uc?export=view&id=1_Uz0hyhWFMyiaurp8kZ856E5Ygn3bZK6"
+
+st.markdown(
+    f"""
+    <style>
+        .stApp {{
+            background-image: url({background_image});
+            background-repeat: no-repeat;
+            background-size: cover;
+        }}
+
+        .map-frame {{
+            border: 25px solid #8B4513;  /* Increased border width and changed color to a brown (like wood) */
+            border-radius: 15px;       /* Adjusted border radius for a more rounded appearance */
+            overflow: hidden;          /* Hide any content overflowing the frame */
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.4); /* Add shadow for depth */
+        }}
+        
+        .leaflet-container {{
+            box-shadow: 0 0 20px 20px white;  /* Adjust as needed */
+        }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 site_data = pd.read_csv(r"./segments_site_k_values.csv")
 
 min_k = site_data['k1'].min()
