@@ -1,23 +1,20 @@
+import streamlit as st
 import folium
+from streamlit_folium import folium_static
 import pandas as pd
 import branca
-from folium import IFrame
 
-# Load your data
 site_data = pd.read_csv(r"./segments_site_k_values.csv")
 
-# Create a colormap for the k values
 min_k = site_data['k1'].min()
 max_k = site_data['k1'].max()
 colormap = branca.colormap.linear.RdBu_11.scale(min_k, max_k)
 
-# Create a base map centered around Guatemala
-m = folium.Map(location=[15.7835, -90.2308], zoom_start=6, tiles='Stamen Terrain', min_zoom=2, max_zoom=16)
+topo_tile_url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+m = folium.Map(location=[15.7835, -90.2308], zoom_start=6, tiles=topo_tile_url, attr='Esri')
 
-# Directory containing the plots
 plot_dir = "./segments_site_plots/"
 
-# Add your sites to the map
 for _, row in site_data.iterrows():
     color = colormap(row['k1'])
     
@@ -39,12 +36,14 @@ for _, row in site_data.iterrows():
         fill=True,
         fill_color=color,
         fill_opacity=0.6,
-        popup=folium.Popup(popup_content, max_width=310) # you can adjust the max_width if needed
+        popup=folium.Popup(popup_content, max_width=310) 
     ).add_to(m)
 
-# Add the color map legend to the map
 colormap.caption = "k Value"
 colormap.add_to(m)
 
-# Display the map
-m
+folium_static(m)
+
+st.title("Growth Curve Map of Plantation Across Guatemala")
+st.subheader("Created by Lambert Lin, Ja Yoon Kim")
+
