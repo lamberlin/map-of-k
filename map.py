@@ -2,14 +2,17 @@ import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
-import cartopy.feature as cfeature
+import cartopy.io.img_tiles as cimgt  # <-- Make sure to import this
 
 site_data = pd.read_csv(r"./segments_site_k_values.csv")
+world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+guatemala_map = world[world.name == 'Guatemala']
 
 fig, ax = plt.subplots(subplot_kw={'projection': ccrs.PlateCarree()}, figsize=(10, 10))
 
-# Add Stamen terrain background
-ax.add_image(cfeature.STAMEN_TERRAIN, 6)  # '6' is the zoom level; you can adjust it as needed
+# Use Stamen Terrain tiles
+stamen_terrain = cimgt.Stamen('terrain-background')  # <-- Create an instance of Stamen with 'terrain' tile
+ax.add_image(stamen_terrain, 6)  # <-- Add the StamenTerrain to the axis
 
 # Plot sites with k values
 sc = ax.scatter(site_data['X'], site_data['Y'], c=site_data['k1'], 
