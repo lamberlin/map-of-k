@@ -1,26 +1,34 @@
+import folium
 import pandas as pd
-import geopandas as gpd
-import matplotlib.pyplot as plt
-import cartopy.crs as ccrs
-import cartopy.io.img_tiles as cimgt  # <-- Make sure to import this
+import branca
 
+# Load your data
 site_data = pd.read_csv(r"./segments_site_k_values.csv")
-world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
-guatemala_map = world[world.name == 'Guatemala']
 
-fig, ax = plt.subplots(subplot_kw={'projection': ccrs.PlateCarree()}, figsize=(10, 10))
+# Create a colormap for the k values
+min_k = site_data['k1'].min()
+max_k = site_data['k1'].max()
+colormap = branca.colormap.linear.RdBu_11.scale(min_k, max_k)
 
-# Use Stamen Terrain tiles
-stamen_terrain = cimgt.Stamen('terrain-background')  # <-- Create an instance of Stamen with 'terrain' tile
-ax.add_image(stamen_terrain, 6)  # <-- Add the StamenTerrain to the axis
+# Create a base map centered around Guatemala
+m = folium.Map(location=[15.7835, -90.2308], zoom_start=6, tiles='Stamen Terrain', min_zoom=2, max_zoom=16)
 
-# Plot sites with k values
-sc = ax.scatter(site_data['X'], site_data['Y'], c=site_data['k1'], 
-                s=50, edgecolor='k', cmap='RdBu', transform=ccrs.PlateCarree())
+# Add your sites to the map
+for _, row in site_data.iterrows():
+    color = colormap(row['k1'])
+    folium.CircleMarker(
+        location=[row['Y'], row['X']],
+        radius=5,
+        color=color,
+        fill=True,
+        fill_color=color,
+        fill_opacity=0.6,
+        popup=f"Site: {row['codigoparc']}<br>Species: {row['Especie']}<br>k: {row['k1']}",
+    ).add_to(m)
 
-# Add colorbar
-cbar = plt.colorbar(sc, ax=ax, orientation='horizontal', fraction=0.046, pad=0.1)
-cbar.set_label('k Value')
+# Add the color map legend to the map
+colormap.caption = "k Value"
+colormap.add_to(m)
 
-plt.title('Distribution of k values in Sites across Guatemala')
-plt.show()
+# Display the map
+m
