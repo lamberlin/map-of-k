@@ -72,4 +72,4 @@ for _, row in site_data.iterrows():
 colormap.caption = f"{selected_k} Value"
 colormap.add_to(m)
 
-st.write(folium_static(m))
+folium_static(m)
