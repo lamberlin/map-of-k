@@ -44,7 +44,6 @@ github_base_url = "https://raw.githubusercontent.com/lamberlin/map-of-k/main/seg
 st.title("Growth Curve Map of Plantation Across Guatemala")
 st.subheader("Created by Lambert Lin, Ja Yoon Kim")
 
-# User selection for k value just below the subheader and above the map
 selected_k = st.selectbox(
     "Select k value for visualization:",
     ("k1", "k2", "k3", "k4")
